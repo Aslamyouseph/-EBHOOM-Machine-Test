@@ -24,3 +24,25 @@ This app allows users to chat in real-time, share media, and receive notificatio
 - **Authentication**: bcrypt  
 - **File Uploads**: Multer 
 - **Deployment**: AWS (EC2 / Elastic Beanstalk)  
+
+---
+
+⚙️ Installation
+1 - Clone the repository:
+git clone https://github.com/Aslamyouseph/-EBHOOM-Machine-Test.git
+2 - Navigate to the project directory:
+cd MT
+3 - Install dependencies:
+npm install
+
+---
+
+🚀 Running the Project Locally
+1 - Start the backend server:
+npm start
+The app should now be running at http://localhost:5000.
+
+2 - Start the frontend client:
+npm start
+The app should now be running at http://localhost:3000.
+
