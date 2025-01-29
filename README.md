@@ -27,7 +27,7 @@ This app allows users to chat in real-time, share media, and receive notificatio
 
 ---
 
-⚙️ Installation
+##  ⚙️ Installation
 1 - Clone the repository:
 git clone https://github.com/Aslamyouseph/-EBHOOM-Machine-Test.git
 2 - Navigate to the project directory:
@@ -37,7 +37,7 @@ npm install
 
 ---
 
-🚀 Running the Project Locally
+##  🚀 Running the Project Locally
 1 - Start the backend server:
 npm start
 The app should now be running at http://localhost:5000.
