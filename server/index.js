@@ -7,6 +7,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var session = require("express-session"); //it is used for handing the session operations
 const connectDB = require("./DB-configiration/DB-connection"); // import the connection file
+const UserRouter = require("./routes/userRoutes");
 
 // calling the connection function to connect to the database
 connectDB();
@@ -22,6 +23,20 @@ app.use(bodyParser.json());
 //   res.json({ message: "Hello, it's Aslam Youseph from the server side!" });
 // });
 
+app.use("/api/user", UserRouter); // user routes
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
+});
+
+// Catch 404 and forward to error handler
+app.use((req, res, next) => {
+  next(createError(404, "Not Found"));
+});
+// Error handler middleware
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
 });
