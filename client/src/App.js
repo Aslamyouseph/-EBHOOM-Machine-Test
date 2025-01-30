@@ -1,7 +1,12 @@
 import "./App.css";
 import React, { useEffect, useState } from "react";
 import axios from "axios"; //This us used to connect the frontend to the backend
-
+import { Routes, Route, Link, useNavigate } from "react-router-dom"; // This is used to enable routing.
+import Home from "./userPage/home";
+import Login from "./userPage/login";
+import Signup from "./userPage/signup";
+import Profile from "./userPage/profile";
+import EditProfile from "./userPage/editProfile";
 function App() {
   const [data, setData] = useState(null);
 
@@ -19,7 +24,18 @@ function App() {
 
   return (
     <div>
-      <h1>data: {data}</h1>
+      <Routes>
+        {/*creating a route for home page*/}
+        <Route path="/" element={<Home />} />
+        {/*creating a route for edit profile */}
+        <Route path="/editProfile" element={<EditProfile />} />
+        {/*creating a route login */}
+        <Route path="/login" element={<Login />} />{" "}
+        {/*creating a route profile*/}
+        <Route path="/profile" element={<Profile />} />{" "}
+        {/*creating a route signup*/}
+        <Route path="/signup" element={<Signup />} />{" "}
+      </Routes>
     </div>
   );
 }
