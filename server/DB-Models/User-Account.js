@@ -1,22 +1,28 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt"); // This library is used to hash the password before saving it to the database
+const bcrypt = require("bcryptjs"); // Use bcryptjs instead of bcrypt
 
 // Defining the user schema
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  password: { type: String, required: true },
-});
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true }, // Added email field
+    password: { type: String, required: true },
+  },
+  { timestamps: true } // Adds createdAt & updatedAt fields
+);
 
+// Hash the password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   try {
-    this.password = await bcrypt.hash(this.password, 10); // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (error) {
     next(error);
   }
 });
 
-// Creating the model
+// Creating the User model
 const UserModel = mongoose.model("User", userSchema);
 module.exports = UserModel;
