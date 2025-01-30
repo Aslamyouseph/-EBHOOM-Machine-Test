@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./signUp.css";
+
 const SignUp = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -15,16 +16,27 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signup", {
+      const res = await fetch("http://localhost:5000/api/user/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (res.ok) alert("Signup Successful!");
-      else alert(data.message);
+
+      if (res.ok) {
+        alert("Signup Successful!");
+        //clear the form data after the signup
+        setFormData({ name: "", email: "", password: "" });
+      } else {
+        alert(data.message || "Signup failed. Try again.");
+        //clear the form data after the signup
+        setFormData({ name: "", email: "", password: "" });
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Error:", error);
+      alert("Something went wrong. Please try again.");
+      //clear the form data after the signup
+      setFormData({ name: "", email: "", password: "" });
     }
   };
 
@@ -39,6 +51,7 @@ const SignUp = () => {
             type="text"
             name="name"
             placeholder="Full Name"
+            value={formData.name} //
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
@@ -47,6 +60,7 @@ const SignUp = () => {
             type="email"
             name="email"
             placeholder="Email Address"
+            value={formData.email} //
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
@@ -55,6 +69,7 @@ const SignUp = () => {
             type="password"
             name="password"
             placeholder="Password"
+            value={formData.password}
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
