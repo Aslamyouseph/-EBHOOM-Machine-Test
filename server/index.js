@@ -18,9 +18,9 @@ const port = process.env.PORT || 5000; // This project is run on the port number
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get("/", (req, res) => {
-  res.json({ message: "Hello, it's Aslam Youseph from the server side!" });
-});
+// app.get("/", (req, res) => {
+//   res.json({ message: "Hello, it's Aslam Youseph from the server side!" });
+// });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
