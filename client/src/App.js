@@ -7,6 +7,7 @@ import Login from "./userPage/login";
 import Signup from "./userPage/signup";
 import Profile from "./userPage/profile";
 import EditProfile from "./userPage/editProfile";
+import ChatApp from "./userPage/chatApp";
 function App() {
   const [data, setData] = useState(null);
 
@@ -35,6 +36,8 @@ function App() {
         <Route path="/profile" element={<Profile />} />{" "}
         {/*creating a route signup*/}
         <Route path="/signup" element={<Signup />} />{" "}
+        {/*creating a route chatApp page*/}
+        <Route path="/chatApp" element={<ChatApp />} />{" "}
       </Routes>
     </div>
   );

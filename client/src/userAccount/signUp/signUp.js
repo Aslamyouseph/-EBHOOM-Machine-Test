@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./signUp.css";
 
 const SignUp = () => {
@@ -8,6 +9,8 @@ const SignUp = () => {
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate(); // Get the navigate function (To implement the navigation function this line of code is impotent)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,16 +30,13 @@ const SignUp = () => {
         alert("Signup Successful!");
         //clear the form data after the signup
         setFormData({ name: "", email: "", password: "" });
+        navigate("/chatApp"); // after the signup navigate to chatApp page(This is used for the navigation)
       } else {
         alert(data.message || "Signup failed. Try again.");
-        //clear the form data after the signup
-        setFormData({ name: "", email: "", password: "" });
       }
     } catch (error) {
       console.error("Error:", error);
       alert("Something went wrong. Please try again.");
-      //clear the form data after the signup
-      setFormData({ name: "", email: "", password: "" });
     }
   };
 
@@ -76,7 +76,7 @@ const SignUp = () => {
           />
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+            className="w-full py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             Create Account
           </button>
@@ -84,7 +84,7 @@ const SignUp = () => {
         <p className="text-center text-gray-600 mt-4">
           Already have an account?{" "}
           <Link to="/login" className="text-blue-500 hover:underline">
-            Login here
+            Login
           </Link>
         </p>
       </div>

@@ -19,6 +19,18 @@ const port = process.env.PORT || 5000; // This project is run on the port number
 app.use(cors());
 app.use(bodyParser.json());
 
+// It is also used for handling the session
+var session = require("express-session");
+//it is used for handing the session operations
+app.use(
+  session({
+    secret: "key",
+    resave: false, // To avoid session re-saving issues
+    saveUninitialized: true, // To ensure uninitialized sessions are stored
+    cookie: { maxAge: 6000 }, // Session timeout in ms (10 minutes)
+  })
+);
+
 // app.get("/", (req, res) => {
 //   res.json({ message: "Hello, it's Aslam Youseph from the server side!" });
 // });

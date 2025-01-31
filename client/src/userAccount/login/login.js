@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import "./login.css";
+import { Link, useNavigate } from "react-router-dom";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate(); // Get the navigate function (To implement the navigation function this line of code is impotent)
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -13,8 +17,27 @@ const Login = () => {
       return;
     }
 
-    console.log("Logged in with:", email, password);
-    setError("");
+    try {
+      const res = await fetch("http://localhost:5000/api/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Login Successful!");
+        setEmail("");
+        setPassword("");
+        navigate("/chatApp");
+      } else {
+        setError(data.message || "Login failed. Try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setError("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -62,6 +85,12 @@ const Login = () => {
             Login
           </button>
         </form>
+        <p className="text-center text-gray-600 mt-4">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-blue-500 hover:underline">
+            Sign Up
+          </Link>
+        </p>
       </div>
     </div>
   );
