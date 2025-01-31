@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userHelpers = require("../helpers/userHelpers"); // Accessing user-helpers file
 
-// Signup Route
+// Signup operation
 router.post("/signup", async (req, res) => {
   try {
     const response = await userHelpers.doSignup(req.body);
@@ -44,6 +44,20 @@ router.post("/login", (req, res) => {
         message: "Invalid Email or Password",
       });
     }
+  });
+});
+// logout operation
+router.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      // console.log(err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to log out" });
+    }
+    // console.log("Session destroyed");
+    res.clearCookie("connect.sid"); // Clear the session cookie
+    res.status(200).json({ success: true, message: "Logged out successfully" });
   });
 });
 

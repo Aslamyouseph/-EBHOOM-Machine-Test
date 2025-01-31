@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Menu, X } from "lucide-react"; // Import icons
 import "./NavBar.css";
 
@@ -8,16 +8,27 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Check if user is logged in (using localStorage as an example)
-    const user = localStorage.getItem("user");
-    if (user) setIsLoggedIn(true);
-  }, []);
+  const handleLogout = async (e) => {
+    e.preventDefault();
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
-    navigate("/login"); // Redirect to login after logout
+    try {
+      const res = await fetch("http://localhost:5000/api/user/logout", {
+        method: "GET", // Use GET method since that's what the backend expects
+        credentials: "omit",
+      });
+
+      // console.log("Response status:", res.status);
+      if (res.ok) {
+        localStorage.removeItem("user"); // Remove user from localStorage
+        setIsLoggedIn(false); // Update state
+        navigate("/"); // Redirect to login/home
+      } else {
+        alert("Logout failed. Please try again.");
+      }
+    } catch (error) {
+      // console.error("Error:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -27,8 +38,7 @@ const Navbar = () => {
         <Link to="/" className="text-2xl font-bold tracking-wide">
           chat<span className="text-yellow-400">App</span>
         </Link>
-
-        {/* Desktop Navigation */}
+        {/* TODO:Desktop Navigation  setup */}
         <ul className="hidden md:flex space-x-6 text-lg">
           <li>
             <Link
@@ -47,8 +57,7 @@ const Navbar = () => {
             </button>
           </li>
         </ul>
-
-        {/* Mobile Menu Button */}
+        {/* TODO:Mobile Menu Button */}
         <button
           className="md:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -57,7 +66,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation setup*/}
       {isMenuOpen && (
         <ul className="md:hidden bg-blue-700 text-white space-y-4 text-center py-4">
           <li>
