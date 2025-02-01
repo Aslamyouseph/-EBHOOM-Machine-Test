@@ -6,16 +6,34 @@ const userHelpers = require("../helpers/userHelpers"); // Accessing user-helpers
 router.post("/signup", async (req, res) => {
   try {
     const response = await userHelpers.doSignup(req.body);
-    req.session.user = response; // used to store the user data into the session
-    req.session.userLoggedIn = true; // This is used to create a session after the user created a account
 
-    // Respond back with success
-    res.status(200).json({
-      success: true,
-      message: "Signup successful",
-      user: response, // Send user data back
+    // Store only necessary user details in session (NEVER store password)
+    req.session.user = {
+      id: response.user._id,
+      name: response.user.name,
+      email: response.user.email,
+      password: response.user.password,
+    };
+    req.session.userLoggedIn = true; // Flag for logged-in state
+
+    // Save the session data before responding
+    req.session.save((err) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          message: "Error saving session",
+        });
+      }
+      // console.log("Session after signup:", req.session);
+      // Send response after session is stored
+      res.status(200).json({
+        success: true,
+        message: "Signup successful",
+        user: response.user,
+      });
     });
   } catch (error) {
+    console.error("Signup error:", error);
     res.status(500).json({
       success: false,
       message: "Signup failed!",
@@ -27,10 +45,19 @@ router.post("/signup", async (req, res) => {
 // login operation
 router.post("/login", (req, res) => {
   userHelpers.dologin(req.body).then((response) => {
+    // console.log("Session before login:", req.session); // Log the session after setting user data
+    // console.log("Login Response:", response); // Log the response
     if (response.status == true) {
-      req.session.user = response.user;
+      req.session.user = {
+        id: response.user._id,
+        name: response.user.name,
+        email: response.user.email,
+        password: response.user.password,
+      };
       req.session.userLoggedIn = true;
-
+      // let user = req.session.user;
+      // console.log("user details from the session after login:", user);
+      // console.log("Session after login:", req.session);
       // Respond back with success
       res.status(200).json({
         success: true,
@@ -47,18 +74,72 @@ router.post("/login", (req, res) => {
   });
 });
 // logout operation
-router.get("/logout", (req, res) => {
+router.post("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      // console.log(err);
       return res
         .status(500)
         .json({ success: false, message: "Failed to log out" });
     }
-    // console.log("Session destroyed");
-    res.clearCookie("connect.sid"); // Clear the session cookie
-    res.status(200).json({ success: true, message: "Logged out successfully" });
+    res.clearCookie("connect.sid", { path: "/" }); // Ensure the cookie is cleared
+    return res
+      .status(200)
+      .json({ success: true, message: "Logged out successfully" });
   });
+});
+
+// fetch the user data from the database
+router.get("/profile", async (req, res) => {
+  try {
+    // Debug the session data
+    // console.log("Session Data before fetching profile:", req.session);
+    // let userr = req.session.user;
+    // console.log("user details from the session after profile:", userr);
+    if (!req.session.user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "User  not authenticated" });
+    }
+
+    let user = req.session.user; // Should have user data here
+    // console.log("User  from profile:", user);
+
+    let profileDetails = await userHelpers.getProfileDetails(user.id); // Use user.id if that's what you stored
+    // console.log("Profile Details:", profileDetails);
+
+    res.status(200).json({
+      success: true,
+      message: "Profile fetched successfully",
+      user: profileDetails,
+    });
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+// if the user is submitted the edited form edit is saved to the database
+router.post("/editprofile", async (req, res) => {
+  let userDetails = {
+    id: req.body.id, // User ID from the frontend
+    name: req.body.name,
+    email: req.body.email,
+  };
+
+  try {
+    const updatedUser = await userHelpers.editUserDetails(userDetails);
+    req.session.user = updatedUser; // saving the updated data into the session
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update profile. Please try again.",
+    });
+  }
 });
 
 module.exports = router;

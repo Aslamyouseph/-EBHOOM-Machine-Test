@@ -1,54 +1,69 @@
 const express = require("express");
-var createError = require("http-errors");
+const createError = require("http-errors");
 const cors = require("cors");
-var path = require("path");
-const bodyParser = require("body-parser");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-var session = require("express-session"); //it is used for handing the session operations
-const connectDB = require("./DB-configiration/DB-connection"); // import the connection file
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const connectDB = require("./DB-configiration/DB-connection");
 const UserRouter = require("./routes/userRoutes");
 
-// calling the connection function to connect to the database
+// Connect to MongoDB
 connectDB();
 
 const app = express();
-const port = process.env.PORT || 5000; // This project is run on the port number 5000
+const port = process.env.PORT || 5000;
 
-// // Middleware
-app.use(cors());
-app.use(bodyParser.json());
-
-// It is also used for handling the session
-var session = require("express-session");
-//it is used for handing the session operations
+// Middleware
 app.use(
-  session({
-    secret: "key",
-    resave: false, // To avoid session re-saving issues
-    saveUninitialized: true, // To ensure uninitialized sessions are stored
-    cookie: { maxAge: 6000 }, // Session timeout in ms (10 minutes)
+  cors({
+    origin: "http://localhost:3000", // Allow frontend origin
+    credentials: true, // Allow credentials (cookies)
   })
 );
 
-// app.get("/", (req, res) => {
-//   res.json({ message: "Hello, it's Aslam Youseph from the server side!" });
-// });
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Parse form data
 
-app.use("/api/user", UserRouter); // user routes
+// Configure session (Place before routes)
+app.use(
+  session({
+    secret: "your-strong-secret-key", // Use a strong secret key
+    resave: false, // Don't save session if unmodified
+    saveUninitialized: false, // Don't create session until something is stored
+    store: MongoStore.create({
+      mongoUrl: "mongodb://localhost:27017/yourdbname", // Replace with your DB name
+      collectionName: "sessions", // Store sessions in "sessions" collection
+    }),
+    cookie: {
+      httpOnly: true, // Prevent XSS attacks
+      secure: false, // Set `true` if using HTTPS
+      sameSite: "lax", // Prevent CSRF
+      maxAge: 10 * 60 * 1000, // Session expires in 10 mins
+    },
+  })
+);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+// Routes
+app.use("/api/user", UserRouter);
+
+// Debugging: Check if session is working
+app.get("/api/session", (req, res) => {
+  res.json({ session: req.session });
 });
 
-// Catch 404 and forward to error handler
+// Handle 404 errors
 app.use((req, res, next) => {
   next(createError(404, "Not Found"));
 });
-// Error handler middleware
+
+// Error handler
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
     success: false,
     message: err.message || "Internal Server Error",
   });
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
 });

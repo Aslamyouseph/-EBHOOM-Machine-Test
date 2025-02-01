@@ -7,11 +7,13 @@ const { reject } = require("promise");
 module.exports = {
   // used for the signup operation
   doSignup: (userData) => {
+    // console.log("Signup data in userHelpers:", userData);
     return new Promise(async (resolve, reject) => {
       try {
         const newUser = new UserModel(userData);
         const result = await newUser.save(); // Save to database
-        resolve(result);
+        // console.log("Signup successful!", result);
+        resolve({ user: result });
       } catch (error) {
         reject(error);
       }
@@ -51,6 +53,39 @@ module.exports = {
       } catch (error) {
         console.error("Error during login:", error);
         reject({ status: false, message: "Login error occurred" });
+      }
+    });
+  },
+  // fetch the user data from the database
+  getProfileDetails: (userID) => {
+    // console.log(userID);
+    return new Promise(async (resolve, reject) => {
+      try {
+        //finding the user by using the userID
+        let userDetails = await UserModel.findById(userID).lean();
+        resolve(userDetails);
+        // console.log(userDetails);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+  //updating or editing the user profile details
+  // Helper function for editing user details
+  editUserDetails: (userDetails) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const { id, name, email } = userDetails;
+        await UserModel.findByIdAndUpdate(id, {
+          name,
+          email,
+        });
+
+        // Fetch the updated user details to return them
+        const updatedUser = await UserModel.findById(id);
+        resolve(updatedUser);
+      } catch (error) {
+        reject(error);
       }
     });
   },

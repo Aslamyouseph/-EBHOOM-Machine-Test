@@ -1,53 +1,85 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import "./editProfile.css";
+
 function EditProfile() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [profilePic, setProfilePic] = useState(null); // For storing profile picture URL
+  const [user, setUser] = useState(null); // State to store user details
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+  });
 
+  const navigate = useNavigate(); // Get the navigate function
+
+  // Fetch login user details to pre-fill the form
   useEffect(() => {
-    // Simulating fetching current user data
-    const currentUserData = {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      profilePic: "https://www.example.com/profile-pic.jpg", // Placeholder image
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/user/profile", {
+          method: "GET",
+          credentials: "include", // Ensures that the session is used for authentication
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          setUser(data.user); // Store the user data
+          setFormData({
+            name: data.user.name,
+            email: data.user.email,
+          }); // Pre-fill the form fields with the fetched data
+        } else {
+          setError("Failed to fetch user details.");
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+        setError("Something went wrong. Please try again.");
+      }
     };
 
-    // Set the initial state with the current user data
-    setName(currentUserData.name);
-    setEmail(currentUserData.email);
-    setProfilePic(currentUserData.profilePic);
+    fetchProfile();
   }, []);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfilePic(URL.createObjectURL(file)); // Preview the selected image
-    }
+  // Handle form data changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value, // Update form data on input change
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!name || !email || !password || !confirmPassword) {
+    if (!formData.name || !formData.email) {
       setError("Please fill in all fields");
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+    try {
+      const res = await fetch("http://localhost:5000/api/user/editprofile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, id: user._id }), // Pass user ID here
+        credentials: "include", // Include session in the request
+      });
 
-    // Simulating the update process (e.g., API call)
-    setTimeout(() => {
-      setSuccess("Account details updated successfully!");
-      setError("");
-    }, 1000);
+      const data = await res.json();
+      if (res.ok) {
+        setSuccess("Account details updated successfully!");
+        setError("");
+        setTimeout(() => {
+          navigate("/chatApp"); // After updating, navigate to the chat app
+        }, 1000);
+      } else {
+        setError(data.message || "Edit failed. Try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setError("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -56,121 +88,70 @@ function EditProfile() {
         <h2 className="text-2xl font-semibold text-center mb-6">
           Edit Account
         </h2>
+
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         {success && (
           <p className="text-green-500 text-center mb-4">{success}</p>
         )}
-        <form onSubmit={handleSubmit}>
-          {/* Full Name */}
-          <div className="mb-4">
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
 
-          {/* Email */}
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Password */}
-          <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Confirm Password */}
-          <div className="mb-6">
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Profile Picture */}
-          <div className="mb-6">
-            <label
-              htmlFor="profilePic"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Profile Picture (Optional)
-            </label>
-            <input
-              type="file"
-              id="profilePic"
-              accept="image/*"
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              onChange={handleFileChange}
-            />
-          </div>
-
-          {/* Profile Picture Preview */}
-          {profilePic && (
+        {user ? (
+          <form onSubmit={handleSubmit}>
+            {/* Full Name */}
             <div className="mb-4">
-              <p className="text-sm text-gray-500 mb-2">
-                Profile Picture Preview:
-              </p>
-              <img
-                src={profilePic}
-                alt="Profile Preview"
-                className="w-24 h-24 object-cover rounded-full mx-auto"
+              <input
+                type="hidden"
+                id="id"
+                name="id"
+                value={user._id} // Pass the user ID in the hidden field
               />
             </div>
-          )}
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Full Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="w-full py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            Save Changes
-          </button>
-        </form>
+            {/* Email */}
+            <div className="mb-4">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              Save Changes
+            </button>
+          </form>
+        ) : (
+          <p>Session expired. Please re-login again.</p>
+        )}
       </div>
     </div>
   );

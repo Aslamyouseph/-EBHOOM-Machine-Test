@@ -13,8 +13,11 @@ const Navbar = () => {
 
     try {
       const res = await fetch("http://localhost:5000/api/user/logout", {
-        method: "GET", // Use GET method since that's what the backend expects
-        credentials: "omit",
+        method: "POST", // Use GET method since that's what the backend expects
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       // console.log("Response status:", res.status);
@@ -42,10 +45,18 @@ const Navbar = () => {
         <ul className="hidden md:flex space-x-6 text-lg">
           <li>
             <Link
-              to="/editProfile"
+              to="/profile"
               className="hover:text-yellow-300 transition duration-300"
             >
               Account
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/login"
+              className="hover:text-yellow-300 transition duration-300"
+            >
+              Login
             </Link>
           </li>
           <li>
@@ -71,11 +82,19 @@ const Navbar = () => {
         <ul className="md:hidden bg-blue-700 text-white space-y-4 text-center py-4">
           <li>
             <Link
-              to="/editProfile"
+              to="/profile"
               className="block py-2 hover:text-yellow-300"
               onClick={() => setIsMenuOpen(false)}
             >
               Account
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/login"
+              className="hover:text-yellow-300 transition duration-300"
+            >
+              Login
             </Link>
           </li>
           <li>
