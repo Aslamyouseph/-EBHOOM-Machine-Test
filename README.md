@@ -58,6 +58,7 @@ The app should now be running at http://localhost:3000.
 📂 Project Structure
 
 
+```bash
 /MT
 ├── client/ (Frontend - React.js)
 │   ├── node_modules/
@@ -125,6 +126,8 @@ The app should now be running at http://localhost:3000.
 ├── .gitignore
 ├── package.json
 └── .env
+```
+
 
 
 ---
