@@ -60,69 +60,131 @@ The app should now be running at http://localhost:3000.
 
 /MT
  ├── client/ (Frontend - React.js)
+ 
  |   ├── node_modules
+ 
  |   ├── public/
+ 
  |   |   ├──favicon.ico
+ 
  |   |   ├──index.html
+ 
  |   |   ├──mainfest.json
+ 
  │   ├── src/
+ 
  │   │   ├── assets
+ 
  │   │   ├── chatApp
+ 
  |   │   │   ├── chatApp.js
+ 
  |   │   │   ├── chatApp.css
+ 
  │   │   ├── components
+ 
  |   │   │   ├── Button
+ 
  |   │   │   ├── Input
+ 
  │   │   ├── home
+ 
  |   │   │   ├── home.js
+ 
  |   │   │   ├── home.css
+ 
  │   │   ├── NavBar
+ 
  │   │   ├── UserAccount
+ 
  |   │   │   ├── editProfile
+ 
  |   │   │   |  ├── editProfile.js
+ 
  |   │   │   |  ├── editProfile.css
+ 
  |   │   │   ├── login
+ 
  |   │   │   |  ├── login.js
+ 
  |   │   │   |  ├── login.css
+ 
  |   │   │   ├── signUp
+ 
  |   │   │   |  ├── signUp.js
+ 
  |   │   │   |  ├── sign.css
+ 
  |   │   │   ├── UserProfile
+ 
  |   │   │   |  ├── UserProfile.js
+ 
  |   │   │   |  ├── UserProfile.css
+ 
  │   │   ├── userPage
+ 
  |   │   │   ├── chatApp.js
+ 
  |   │   │   ├── editProfile.js
+ 
  |   │   │   ├── home.js
+ 
  |   │   │   ├── login.js
+ 
  |   │   │   ├── profile.js
+ 
  |   │   │   ├── signup.js
+ 
  │   │   ├── App.css
+ 
  │   │   ├── App.js
+ 
  │   │   ├── index.css
+ 
  │   │   └── index.js
+ 
  │   ├── package-lock.json
+ 
  │   ├── package.json
+ 
  │   └── tailwind.config.js
+ 
  │
  ├── server/ (Backend - Node.js)
+ 
  │   ├── DB-configiration
+ 
  │   |   ├── DB-connection.js
+ 
  │   ├── DB-models
+ 
  │   |   ├──Conversation.js
+ 
  │   |   ├── Message.js
+ 
  │   |   ├── User-Account.js
+ 
  │   ├── helpers
+ 
  │   |   ├── UserHelpers.js
+ 
  │   ├── node_modules
+ 
  │   ├── routes
+ 
  │   |   ├── UserRoutes.js
+ 
  │   ├── index.js
+ 
  │   ├── package-lock.json
+ 
  │   └── package.json
  ├── README.md
+ 
  ├── .gitignore
+ 
  ├── package.json
+ 
  └── .env
 
 
@@ -130,18 +192,27 @@ The app should now be running at http://localhost:3000.
 
 🛠️ Authentication Routes
 
+
 Method	         Endpoint	                 Description
+
 POST	           /api/user/register	       User registration
+
 POST	           /api/user/login	         User login
+
 GET	             /api/user/logout	         User logout
+
 
 ---
 
 
 🏆 Future Enhancements
+
 🚀 Group Chat Feature – Add support for group messaging
+
 🔒 End-to-End Encryption – Secure chats using encryption
+
 📞 Voice & Video Calls – Integrate WebRTC for calls
+
 🌎 Multi-Language Support – Add localization support
 
 
